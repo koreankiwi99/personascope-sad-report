@@ -19,7 +19,7 @@ Two terms are used throughout, and they are not the same measurement:
 Generated 22–23 Sep 2026, scored 28–29 Sep; 1,033 rows regenerated and
 100 verdicts re-judged on 1 Oct ([A.3](#a3-sanity-check)). Figures in
 `report/figures/`. Two further cuts of the same answers, by item subcategory and
-by persona, are in `extra-studies-SAD.md` (not included here).
+by persona, are in [extra-studies-SAD.md](extra-studies-SAD.md).
 
 ---
 
