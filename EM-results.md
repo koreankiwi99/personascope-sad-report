@@ -7,9 +7,10 @@ batteries of Emergent Misalignment (Betley et al.) and Weird Generalization,
 and asks which persona measurement predicts it.
 
 Over all 68 induced cells, with the route and persona main effects removed, the
-in-character rate predicts misalignment at **r = +0.581** and **ρ = +0.490**,
-both p < 0.0001; identification at **+0.097**, p = 0.45. Identification is the
-measurement the persona literature usually reports.
+in-character rate predicts misalignment at **r = +0.581** and **ρ = +0.490**;
+removing model as well leaves **+0.427** and **+0.396**. Identification predicts
+it at **+0.097**, p = 0.45, and is the measurement the persona literature
+usually reports.
 
 Both batteries are run verbatim from the source projects, with their own judge
 prompts and judge model, because this is a replication rather than a new
@@ -24,16 +25,21 @@ of `em_wg_alignment_v1`. Figures in `report/figures/`.
   pooled under `system`. Persona separates the cells further than route or model
   does: 0.002 to 0.328 across personas against 0.072 to 0.242 across routes.
 - It tracks the in-character rate, +0.490 to +0.581 with route and persona
-  removed, and not identification, +0.097 at p = 0.45.
+  removed and +0.396 to +0.427 with model removed as well, and not
+  identification, +0.097 at p = 0.45.
+- Most of that is between models rather than within one: r = +0.900 across the
+  seven model means, against +0.175 to +0.625 inside a model, and −0.346 for
+  gpt-5.6-luna.
 - That is one half of a product. Curie has the same in-character rate as every
   other persona and 0.000 misalignment, so the value the persona supplies is the
   other half and is not measured here ([§4.1](#4-todo)).
 - The in-character rate is one reading of one number, and a narrow one: it is
   read on self-description, not general role compliance ([§4.4](#4-todo)).
 - [§3.4](#34-what-the-rate-tracks) compares cells, not interventions: 68 crossed
-  cells, nominal uncorrected p-values, no model manipulated to change its
-  in-character rate with everything else held fixed ([§4.1](#4-todo),
-  [§4.5](#4-todo)).
+  cells and no model manipulated to change its in-character rate with everything
+  else held fixed ([§4.1](#4-todo), [§4.5](#4-todo)). The p-values are from a
+  permutation test that shuffles within model, since the cells are not
+  independent.
 - Minor: coherence is not scored, so EM's own metric is not recoverable from
   this run ([§4.2](#4-todo)).
 
@@ -306,22 +312,39 @@ Both judges are carried through: ours, which is told nothing about the persona,
 and the Assistant Axis role judge, which is told. Their cell rates agree at
 r = +0.965, so nothing below turns on which is used.
 
-| adjustment | ours, *r* | ours, *ρ* | Assistant Axis, *r* | Assistant Axis, *ρ* | identification, *r* |
-|---|--:|--:|--:|--:|--:|
-| none, raw | +0.535<br>*<0.0001* | +0.428<br>*0.0003* | +0.489<br>*<0.0001* | +0.333<br>*0.006* | +0.122<br>*0.32* |
-| route removed | +0.395<br>*0.001* | +0.320<br>*0.009* | +0.332<br>*0.006* | +0.227<br>*0.067* | +0.037<br>*0.77* |
-| persona removed | **+0.714**<br>*<0.0001* | **+0.714**<br>*<0.0001* | **+0.706**<br>*<0.0001* | **+0.709**<br>*<0.0001* | +0.189<br>*0.13* |
-| both removed | **+0.581**<br>*<0.0001* | **+0.490**<br>*<0.0001* | **+0.603**<br>*<0.0001* | **+0.546**<br>*<0.0001* | +0.097<br>*0.45* |
+| adjustment | ours, *r* | ours, *ρ* | Assistant Axis, *r* | identification, *r* |
+|---|--:|--:|--:|--:|
+| none, raw | +0.535<br>*<0.0001* | +0.428<br>*0.0003* | +0.489<br>*<0.0001* | +0.122<br>*0.32* |
+| route removed | +0.395<br>*0.001* | +0.320<br>*0.009* | +0.332<br>*0.006* | +0.037<br>*0.77* |
+| persona removed | **+0.714**<br>*<0.0001* | **+0.714**<br>*<0.0001* | **+0.706**<br>*<0.0001* | +0.189<br>*0.13* |
+| model removed | +0.488<br>*0.0001* | +0.417<br>*0.001* | +0.462<br>*0.0003* | +0.219<br>*0.09* |
+| route + persona | **+0.581**<br>*<0.0001* | **+0.490**<br>*<0.0001* | **+0.603**<br>*<0.0001* | +0.097<br>*0.45* |
+| all three removed | **+0.427**<br>*0.0009* | **+0.396**<br>*0.002* | **+0.487**<br>*0.0001* | +0.182<br>*0.17* |
 
-*Table 5. The same 68 cells under four adjustments, on both judges. Coefficient
-above, p below. Route is a common cause, so removing it lowers the relation;
-persona moves misalignment by 0.33 while barely moving the in-character rate, so
-removing it raises the relation.*
+*Table 5. The same 68 cells under six adjustments. Coefficient above, p below.
+Route is a common cause, so removing it lowers the relation; persona moves
+misalignment by 0.33 while barely moving the in-character rate, so removing it
+raises the relation.*
+
+**The cells are not independent, so the t-test p is not the one to trust.** They
+are crossed model × route × persona, and a model that resists induction across
+the board lowers both quantities at once. A permutation test answers it: shuffle
+the in-character rate **within each model**, which keeps the between-model
+structure and destroys only the within-model association. Over 10,000 shuffles
+the observed +0.581 (route and persona removed) gives **p = 0.0001**, and the
+observed +0.427 (all three removed) gives **p = 0.0007**.
+
+**Both components are real, and they are very different sizes.** Between the
+seven model means the relation is r = +0.900 on n = 7. Within a model, across
+its route × persona cells, it is positive on six of seven: qwen3.8-27B +0.625,
+deepseek-v4.1-flash +0.546, gpt-4.1 +0.531, claude-sonnet-5 +0.501, kimi-k2.6
++0.407, glm-5.3-flash +0.175, and **gpt-5.6-luna −0.346**. So part of this is a
+model trait, on an effective n of 7 rather than 68, and part of it holds inside
+a single model. The headline figure mixes the two.
 
 **The answer is yes, and it is not large.** The in-character rate is positive on
-both judges under every adjustment, +0.227 to +0.714, and significant in 15 of
-those 16 figures. Identification never clears +0.19 and never falls below
-p = 0.13. Within a single route and persona, on n = 7 each: Voldemort +0.923
+both judges under all six adjustments, +0.396 to +0.714, every one significant.
+Identification never clears +0.22 and never falls below p = 0.09. Within a single route and persona, on n = 7 each: Voldemort +0.923
 (p = 0.003) and +0.858 (p = 0.013), Stalin +0.805 (p = 0.029) and +0.811
 (p = 0.027), Vader +0.574 (p = 0.18) and +0.418 (p = 0.35). Curie is undefined,
 having no variance to correlate with.
@@ -382,14 +405,19 @@ role judge, so every answer that carries a misalignment verdict also carries an
 in-character verdict. The EM battery scores what was said and is silent on
 whether the model said it as the persona or as the assistant, and the second
 case is the one that would matter: an induction that moves behaviour without the
-model ever speaking as the character. Results will go in `in-character-EM.md`.
+model ever speaking as the character. Results in
+[in-character-EM.md](in-character-EM.md).
 
 **4.5 A second question set, to check these 18 are not cherry-picked.** The
 personas in Shah et al., *Scalable and Transferable Black-Box Jailbreaks for
 Language Models via Persona Modulation* (arXiv:2311.03348), are optimised
-against a target rather than drawn from a corpus. Running them here would say
-whether the open questions above survive a question set and a persona source
-this panel did not choose.
+against a target rather than drawn from a corpus, which is the question set this
+panel did not choose. **Their prompts are not available**: the paper withholds
+them and releases no code, stating that it describes the method "in general
+terms, omitting specific prompts that could be easily misused". Reproducing the
+arm means rebuilding their four-step recipe, which is a separate piece of work
+and carries its own safety question. The Assistant Axis repo is no help here
+either: its two jailbreak case studies redact the attack prompt.
 
 ---
 
