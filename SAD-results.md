@@ -5,7 +5,7 @@ the persona. Its items carry answer keys drawn from the persona's biography, so
 a correct answer is one that states the persona's facts. This report asks what
 the model takes itself to **be** once the persona is in place, using the
 self-knowledge tasks of the Situational Awareness Dataset (SAD; Laine et al.,
-arXiv 2407.04694) and two judges derived from the Assistant Axis rubric. Its
+arXiv 2407.04694) and two judges, one of them the Assistant Axis role rubric. Its
 questions are framed like the identity battery's (first person, asked of
 whoever is speaking), but no biography answers them, so what they reveal is
 which entity is speaking rather than which facts it holds.
@@ -15,6 +15,30 @@ Two terms are used throughout, and they are not the same measurement:
 - **identification**: the model states the persona's facts. The identity battery.
 - **self-knowledge**: the model answers from the persona's side when asked what
   kind of thing is speaking. This report.
+
+**Why measure the second one.** It reads three things at once, and none of them
+is recoverable from identification.
+
+- **Rigorous identity adoption.** The identity battery does ask who is
+  speaking: it runs an LLM-disclosure judge over every answer alongside the
+  fact judge. What limits it is the question set, five biographical items per
+  persona, none of which gives the model an occasion to describe what kind of
+  thing it is. So its disclosure read comes back 0.000 on nearly every induced
+  cell while these 370 items, which ask exactly that, put the same cells as low
+  as 0.177. A model can pass on a narrow set and fail on a wide one, and all
+  seven do under `icl_k32`, by 0.471 to 0.742
+  ([identification-vs-self-knowledge.md](identification-vs-self-knowledge.md)).
+- **Susceptibility to the role.** How far a role displaces the model's own
+  self-description, which is a property of the model rather than of the
+  persona: it spans 0.531 to 0.597 across the four personas and 0.318 to 0.825
+  across the two prompt routes.
+- **Low fidelity to the assistant axis.** The inverse reading. The Assistant
+  Axis work builds role vectors for many roles by one shared method and reads
+  them against the direction that separates the assistant from them, so position
+  on that axis is fidelity to the assistant. A high in-character rate is the
+  behavioural counterpart of a low position: the assistant identity has been
+  displaced on exactly the questions where it is supposed to hold. That is why
+  the second judge here is theirs rather than ours.
 
 Generated 22–23 Sep 2026, scored 28–29 Sep; 1,033 rows regenerated and
 100 verdicts re-judged on 1 Oct ([A.3](#a3-sanity-check)). Figures in
@@ -473,20 +497,39 @@ biographical while displaying nothing recognisable as the role.
 
 # 5. Todo
 
-**6.1 Seed variance.** Everything here is seed 42. gpt-4.1 has checkpoints at
+**5.1 Seed variance.** Everything here is seed 42. gpt-4.1 has checkpoints at
 seeds 43 and 44 already, so its half is generation only: 8 cells, 14,800
-responses, plus a pass on each judge. kimi-k2.6 and qwen3.8-27B would need 8
-LoRA jobs first. Worst affected is the epoch and rank run, which is one model,
-one persona and one seed at every point.
+responses plus a judge pass each. kimi-k2.6 and qwen3.8-27B need 8 LoRA jobs
+first. Worst affected is the epoch and rank run, one seed at every point.
 
-**6.2 Shuffled control for the context route.** `icl_k32` is compared only
-against `_base`, which differs from it in two ways at once: no persona and no
-context. A route `icl_shuffled_k32` would hold the prefix and drop the persona,
-drawing its 32 pairs from the other personas' corpora pooled, redrawn per sample
-so no pseudo-persona survives the five. `icl_k32` over it isolates the persona;
-it over `_base` isolates everything else 64 turns of first-person biography
-does. `system_shuffled_k32` already does this in the system slot, after Sturgeon
-et al.
+**5.2 Shuffled control for the context route.** `icl_k32` is compared only
+against `_base`, which differs in two ways at once. `icl_shuffled_k32` would
+hold the prefix and drop the persona, drawn from the other personas' corpora and
+redrawn per sample. `system_shuffled_k32` already does this in the system slot.
+
+**5.3 Tag-gated `sft` and `icl_k32`.** Induce the persona behind an explicit
+trigger, so the same weights and the same prefix answer as the assistant without
+the tag. Separates a persona the model *is* from one it can be asked to be, with
+a within-checkpoint control.
+
+**5.4 Is the category ordering nested within a cell?** Whether an item that
+survives on the hardest category predicts survival on the easier ones, for the
+same persona and sample. One capability with a threshold, or several that
+correlate. The pooled ordering in [§3](#3-induction-route-comparison) does not
+distinguish them.
+
+**5.5 Which measurement cues misalignment.** Answered for the prompt and context
+routes in [EM-results.md](EM-results.md) §3.2: over 42 cells and with route and
+persona partialled out, misalignment tracks the in-character rate at +0.719 and
+identification at +0.084, and `which_llm` alone reaches +0.745. Still open on
+the weights route, which has no misalignment data at all, and under an
+intervention rather than a correlation.
+
+**5.6 SAD's identity-leverage task.** Every task here asks the model to *state*
+what it is. `id_leverage` makes a behaviour depend on it, e.g. "if you are an
+AI, reply in German; if you are a human, reply in French", so the answer shows
+which branch it took. That separates self-knowledge reported from self-knowledge
+acted on.
 
 ---
 
